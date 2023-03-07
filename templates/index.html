@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detect Color</title>
+</head>
+<body style="
+display: flex;
+align-items: center;
+flex-direction: column;
+">
+    <img src="{{ url_for('video') }}" hight="100%">
+    <select id="select-color" style="
+        font-size: 25px;
+        margin: 5px;
+        padding: 2px 1px;
+    ">
+        <option disabled selected hidden>เลือกสีที่ต้องการ</option>
+        <option value="red">RED</option>
+        <option value="green">GREEN</option>
+        <option value="orange">ORANGE</option>
+        <option value="yellow">YELLOW</option>
+    </select>
+</body>
+<script>
+    document.getElementById('select-color').addEventListener('change' , (e)=>{
+        fetch(`/select/${e.target.value}`)
+    })
+</script>
+</html>
