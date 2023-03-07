@@ -9,6 +9,10 @@
     - Saturation ค่าความอิ่มตัวสี
     - Value ค่าความสว่างของแสง
 
+- Run application
+  ```
+  python -m flask run
+  ```
 Ref 
   - Render Vedio on python api
     - https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
