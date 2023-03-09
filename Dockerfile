@@ -1,2 +1,2 @@
-FROM ''
-CMD ['python -m flask run']
+FROM 'alpine'
+CMD ['tail']

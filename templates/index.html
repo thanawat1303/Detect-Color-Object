@@ -4,29 +4,33 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{{url_for('static', filename='opencv.js')}}"></script>
+    <script src="{{url_for('static', filename='Stats.js')}}"></script>
+    <script src="{{url_for('static', filename='scriptdetect.js')}}"></script>
     <title>Detect Color</title>
 </head>
-<body style="
-display: flex;
-align-items: center;
-flex-direction: column;
-">
-    <img src="{{ url_for('video') }}" hight="100%">
-    <select id="select-color" style="
-        font-size: 25px;
-        margin: 5px;
-        padding: 2px 1px;
+<body>
+    <div id="container" style="
+        display: flex;
+        align-items: center;
+        flex-direction: column;
     ">
-        <option disabled selected hidden>เลือกสีที่ต้องการ</option>
-        <option value="red">RED</option>
-        <option value="green">GREEN</option>
-        <option value="orange">ORANGE</option>
-        <option value="yellow">YELLOW</option>
-    </select>
+        <video id="video-detect" hidden></video>
+        <canvas id="outCanvas"></canvas>
+        <select id="select-color" style="
+            font-size: 25px;
+            margin: 5px;
+            padding: 2px 1px;
+        ">
+            <option disabled selected hidden>เลือกสีที่ต้องการ</option>
+            <option value="red">RED</option>
+            <option value="green">GREEN</option>
+            <option value="orange">ORANGE</option>
+            <option value="yellow">YELLOW</option>
+        </select>
+    </div>
 </body>
 <script>
-    document.getElementById('select-color').addEventListener('change' , (e)=>{
-        fetch(`/select/${e.target.value}`)
-    })
+    
 </script>
 </html>

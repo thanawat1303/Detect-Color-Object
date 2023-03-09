@@ -33,7 +33,7 @@ while(True) :
 
     for contour in contours :
         area = cv2.contourArea(contour)
-        if area > 4000 : #เลือกกรอบที่มีขนาดตามรูปภาพที่ต้องการ
+        if area > 2000 : #เลือกกรอบที่มีขนาดตามรูปภาพที่ต้องการ
             x , y , w , h = cv2.boundingRect(contour) #จุดกรอบของรูปร่าง โดยจะมีตำแหน่งที่อยู่บนรูปคือ x , y และ ขนาด w , h
             cv2.rectangle(frame , (x , y) , ( x + w , y + h) , ( 0 , 255 , 0) , 2)
     
