@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv='cache-control' content='no-cache'>
+    <meta http-equiv='expires' content='0'>
+    <meta http-equiv='pragma' content='no-cache'>
+
     <script src="{{url_for('static', filename='opencv.js')}}"></script>
     <script src="{{url_for('static', filename='Stats.js')}}"></script>
     <script src="{{url_for('static', filename='scriptdetect.js')}}"></script>
@@ -16,7 +20,7 @@
         flex-direction: column;
     ">
         <video id="video-detect" hidden></video>
-        <canvas id="outCanvas"></canvas>
+        <canvas id="outCanvas" width="90%"></canvas>
         <select id="select-color" style="
             font-size: 25px;
             margin: 5px;
@@ -28,9 +32,9 @@
             <option value="orange">ORANGE</option>
             <option value="yellow">YELLOW</option>
         </select>
+        <div id="bt-switCamera">
+            <button id="swichCamera">กลับกล้อง</button>
+        </div>
     </div>
 </body>
-<script>
-    
-</script>
 </html>

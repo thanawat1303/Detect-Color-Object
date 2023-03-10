@@ -1,43 +1,93 @@
+let Stream = null
+let render_detect = false
+let modeShow = "frame"
+let Switch = true
+const StartCamera = (media, modecamera , eleVideo) => {
+    if(Stream){
+        Stream.getTracks().forEach(track => {
+            track.stop();
+        })
+    }
+    media.getUserMedia({
+        video: {
+            width : document.body.clientWidth * 0.95,
+            facingMode : {
+                exact : (modecamera) ? "user" : "environment"
+            }
+        },
+        audio:false
+    }).then((videoStr)=>{
+        eleVideo.srcObject = null;
+        eleVideo.srcObject = videoStr;
+        Stream = videoStr
+        videoStr = null
+        eleVideo.play();
+    }).catch(()=>{
+        media.getUserMedia({
+            video: {
+                width : document.body.clientWidth * 0.95,
+                facingMode : {
+                    exact : "user"
+                }
+            },
+            audio:false
+        }).then((videoStr)=>{
+            eleVideo.srcObject = null;
+            eleVideo.srcObject = videoStr;
+            Stream = videoStr
+            videoStr = null
+            eleVideo.play();
+        })
+    })
+}
+
 document.addEventListener("DOMContentLoaded" , ()=>{
     let Color = ""
     let stats = new Stats()
-    stats.showPanel(0)
+    let videoDC = document.getElementById("video-detect")
+    let show = document.getElementById("outCanvas")
+    let media = navigator.mediaDevices
+
+    stats.showPanel(2)
     document.getElementById('container').appendChild(stats.domElement);
     document.getElementById('select-color').addEventListener('change' , (e)=>{
         // fetch(`/select/${e.target.value}`)
         Color = e.target.value
     })
-
-    let media = navigator.mediaDevices
-    let videoDC = document.getElementById("video-detect")
-    media.getUserMedia({
-        video: true,
-        audio:false
-    }).then((videoStr)=>{
-        videoDC.srcObject = videoStr
-        videoDC.play()
+    document.getElementById("swichCamera").addEventListener("click" , ()=>{
+        Switch = !Switch
+        StartCamera(media , Switch , videoDC)
     })
-
-    let src = null , out = null , vid = null
-    let FPS = 30
+    StartCamera(media , Switch , videoDC)
 
     videoDC.addEventListener("canplay" , ()=>{
-        videoDC.height = videoDC.videoHeight
-        videoDC.width = videoDC.videoWidth
-        src = new cv.Mat(videoDC.videoHeight , videoDC.videoWidth , cv.CV_8UC4) //create frame source video
-        out = new cv.Mat(videoDC.videoHeight , videoDC.videoWidth , cv.CV_8UC3) //create frame source to output
-        vid = new cv.VideoCapture(videoDC)
+        if(!render_detect) {
+            InitDetect(videoDC)
+            render_detect = true
+        }
+    })
+
+    function InitDetect(videoOut) {
+        let src = new cv.Mat(videoOut.videoHeight , videoOut.videoWidth , cv.CV_8UC4) //create frame source video
+        let out = new cv.Mat(videoOut.videoHeight , videoOut.videoWidth , cv.CV_8UC3) //create frame source to output
+    
+        videoOut.height = videoOut.videoHeight
+        videoOut.width = videoOut.videoWidth
+
+        let vid = new cv.VideoCapture(videoOut)
         requestAnimationFrame(renderDetect)
         function renderDetect() {
             stats.begin()
+            // show.width = videoOut.videoWidth , show.height = videoOut.videoHeight
             vid.read(src) //Read video put to frame
             let hsv = rgba2hsv(src , out)
             let output = detectColor(src , hsv)
-            cv.imshow("outCanvas" , output)
+            cv.imshow(show , output)
+            // cv.imshowdelete()
             stats.end()
             requestAnimationFrame(renderDetect)
         }
-    })
+    }
 
     const rgba2hsv = (srcIN , output) => {
         cv.cvtColor(srcIN , output , cv.COLOR_RGBA2RGB)
@@ -67,23 +117,41 @@ document.addEventListener("DOMContentLoaded" , ()=>{
             red1.delete() , red2.delete()
             low1.delete() , low2.delete()
             high1.delete() , high2.delete()
-        } else return oldImg
+        } else {
+            ImgHSV = null
+            mask.delete()
+            return oldImg
+        }
+
+        let frameSize = new cv.Size(5, 5)
+        let kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, frameSize);
+        cv.erode(mask, mask, kernel);
+        cv.dilate(mask, mask, kernel);
+        kernel = null , frameSize = null
 
         let contours = new cv.MatVector();
         let hierarchy = new cv.Mat();
         cv.findContours(mask, contours, hierarchy, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE);
         for (let i = 0 ; i < contours.size(); ++i){
-            let area = cv.contourArea(contours.get(i) , false)
-            if(area > 3000) {
-                let [ position , size ] = rectPoint(contours.get(i))
-                let rectangleColor = new cv.Scalar(255 , 0 , 0);
-                cv.rectangle(oldImg , position , size , rectangleColor , 2 , cv.LINE_AA , 0)
+            let cnt = contours.get(i)
+            let area = cv.contourArea(cnt , false)
+            let rectangleColor = new cv.Scalar(255 , 255 , 255);
+            if(modeShow == "frame") {
+                if(area > 5000 && area < 60000) {
+                    let [ position , size ] = rectPoint(cnt)
+                    let rectangleColor = new cv.Scalar(255 , 255 , 255);
+                    cv.rectangle(oldImg , position , size , rectangleColor , 2 , cv.LINE_AA , 0)
+                    position = null,size = null 
+                    rectangleColor = null
+                }
             }
+            else if(modeShow == "draw") {
+                cv.drawContours(oldImg, contours, i, rectangleColor, 2, cv.LINE_8, hierarchy, 100);
+            }
+            area = null , cnt.delete()
         }
-
-        mask.delete()
-        contours.delete()
-        hierarchy.delete()
+        ImgHSV = null,mask.delete()
+        contours.delete(),hierarchy.delete()
 
         return oldImg
     }
@@ -92,6 +160,7 @@ document.addEventListener("DOMContentLoaded" , ()=>{
         let rect = cv.boundingRect(cnt)
         let position = new cv.Point(rect.x, rect.y);
         let size = new cv.Point(rect.x + rect.width, rect.y + rect.height);
+        rect = null
         return [position , size]
     }
 
@@ -100,6 +169,7 @@ document.addEventListener("DOMContentLoaded" , ()=>{
         let h = new cv.Mat(inputImg.rows , inputImg.cols , inputImg.type() , high.concat([255]))
         cv.inRange(inputImg , l , h , mask )
         l.delete() , h.delete()
+        inputImg = null,low = null,high = null
         return mask
     }
 })

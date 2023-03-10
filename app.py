@@ -1,6 +1,7 @@
-from flask import Flask , render_template , Response ,request
-import cv2
-import numpy as np
+from flask import Flask , render_template 
+# , Response ,request
+# import cv2
+# import numpy as np
 
 app = Flask(__name__)
 # def detect_motion() :
