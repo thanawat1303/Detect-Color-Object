@@ -10,8 +10,12 @@
     - Value ค่าความสว่างของแสง
 
 - Run application
-  ```
+  ```ruby
   python -m flask run
+  ```
+- Run Container
+  ```ruby
+  docker run -d -p 80:80 thanawat1303/detect-color-python:v1
   ```
 Ref 
   - Render Vedio on python api
