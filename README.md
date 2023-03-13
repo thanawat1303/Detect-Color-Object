@@ -11,12 +11,16 @@
 
 - Run application
   ```ruby
-  python -m flask run
+  python .\app\app.py
   ```
+
 - Run Container
   ```ruby
   docker run -d -p 80:80 thanawat1303/detect-color-python:v1
   ```
+
+- Open application on Port 80
+
 Ref 
   - Render Vedio on python api
     - https://towardsdatascience.com/video-streaming-in-web-browsers-with-opencv-flask-93a38846fe00
