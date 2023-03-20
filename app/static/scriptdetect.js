@@ -75,14 +75,9 @@ document.addEventListener("DOMContentLoaded" , ()=>{
         let pushColor = new cv.Mat( 3 , 1 , cv.CV_8UC3)
         pushColor.data.set([colorR,colorG,colorB, 0, 0, 0, 0, 0, 0])
         cv.cvtColor(pushColor , pushColor , cv.COLOR_RGB2HSV)
-        if(pushColor[0] >= 170){
-            colorHigh = [pushColor.data[0] , 255 , 255]
-            colorLow = [pushColor.data[0] - 10 , 50 , 50]
-        }
-        else {
-            colorHigh = [pushColor.data[0] , 255 , 255]
-            colorLow = [pushColor.data[0] - 10 , 50 , 50]
-        }
+        
+        colorHigh = [pushColor.data[0] , 255 , 255]
+        colorLow = [pushColor.data[0] - 10 , 50 , 50]
         
         console.log(colorHigh)
     })
