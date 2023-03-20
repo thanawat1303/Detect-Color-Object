@@ -2,6 +2,7 @@ let Stream = null
 let render_detect = false
 let modeShow = "frame"
 let Switch = true
+
 const StartCamera = (media, modecamera , eleVideo) => {
     if(Stream){
         Stream.getTracks().forEach(track => {
@@ -43,6 +44,8 @@ const StartCamera = (media, modecamera , eleVideo) => {
 
 document.addEventListener("DOMContentLoaded" , ()=>{
     let Color = ""
+    let colorLow = []
+    let colorHigh = []
     let stats = new Stats()
     let videoDC = document.getElementById("video-detect")
     let show = document.getElementById("outCanvas")
@@ -50,10 +53,40 @@ document.addEventListener("DOMContentLoaded" , ()=>{
 
     stats.showPanel(2)
     document.getElementById('container').appendChild(stats.domElement);
-    document.getElementById('select-color').addEventListener('change' , (e)=>{
-        // fetch(`/select/${e.target.value}`)
-        Color = e.target.value
+    // document.getElementById('select-color').addEventListener('change' , (e)=>{
+    //     // fetch(`/select/${e.target.value}`)
+    //     Color = e.target.value
+    // })
+    // document.getElementById('colorPickerLow').addEventListener('input' , (e)=>{
+    //     let colorR = parseInt(e.target.value.substring(1 , 3) , 16)
+    //     let colorG = parseInt(e.target.value.substring(3 , 5) , 16)
+    //     let colorB = parseInt(e.target.value.substring(5 , 7) , 16)
+    //     let pushColor = new cv.Mat( 3 , 1 , cv.CV_8UC3)
+    //     pushColor.data.set([colorR,colorG,colorB, 0, 0, 0, 0, 0, 0])
+    //     cv.cvtColor(pushColor , pushColor , cv.COLOR_RGB2HSV)
+    //     colorLow = [pushColor.data[0] , pushColor.data[1] , pushColor.data[2]]
+    //     console.log(colorLow)
+    // })
+
+    document.getElementById('colorPickerHigh').addEventListener('input' , (e)=>{
+        let colorR = parseInt(e.target.value.substring(1 , 3) , 16)
+        let colorG = parseInt(e.target.value.substring(3 , 5) , 16)
+        let colorB = parseInt(e.target.value.substring(5 , 7) , 16)
+        let pushColor = new cv.Mat( 3 , 1 , cv.CV_8UC3)
+        pushColor.data.set([colorR,colorG,colorB, 0, 0, 0, 0, 0, 0])
+        cv.cvtColor(pushColor , pushColor , cv.COLOR_RGB2HSV)
+        if(pushColor[0] >= 170){
+            colorHigh = [pushColor.data[0] , 255 , 255]
+            colorLow = [pushColor.data[0] - 10 , 50 , 50]
+        }
+        else {
+            colorHigh = [pushColor.data[0] , 255 , 255]
+            colorLow = [pushColor.data[0] - 10 , 50 , 50]
+        }
+        
+        console.log(colorHigh)
     })
+
     document.getElementById("swichCamera").addEventListener("click" , ()=>{
         Switch = !Switch
         StartCamera(media , Switch , videoDC)
@@ -97,26 +130,32 @@ document.addEventListener("DOMContentLoaded" , ()=>{
 
     const detectColor = (oldImg , ImgHSV) => {
         let mask = new cv.Mat()
-        if( Color == "orange" )
-            mask = InRange(mask,ImgHSV,[5,50,50],[19,255,255])
-        else if (Color == "yellow")
-            mask = InRange(mask,ImgHSV,[20,50,50],[30,255,255])
-        else if ( Color == "green" )
-            mask = InRange(mask,ImgHSV,[25,52,72],[102,255,255])
-        else if ( Color == "red" ) {
-            let red1 = new cv.Mat() , red2 = new cv.Mat()
+        // if( Color == "orange" )
+        //     mask = InRange(mask,ImgHSV,[5,50,50],[19,255,255])
+        // else if (Color == "yellow")
+        //     mask = InRange(mask,ImgHSV,[20,50,50],[30,255,255])
+        // else if ( Color == "green" )
+        //     mask = InRange(mask,ImgHSV,[25,52,72],[102,255,255])
+        // else if ( Color == "red" ) {
+        //     let red1 = new cv.Mat() , red2 = new cv.Mat()
 
-            let low1 = new cv.Mat(ImgHSV.rows , ImgHSV.cols , ImgHSV.type() , [0,50,50, 255])
-            let low2 = new cv.Mat(ImgHSV.rows , ImgHSV.cols , ImgHSV.type() , [160,50,50, 255])
-            let high1 = new cv.Mat(ImgHSV.rows , ImgHSV.cols , ImgHSV.type() , [5,255,255, 255])
-            let high2 = new cv.Mat(ImgHSV.rows , ImgHSV.cols , ImgHSV.type() , [255,255,255, 255])
+        //     let low1 = new cv.Mat(ImgHSV.rows , ImgHSV.cols , ImgHSV.type() , [0,50,50, 255])
+        //     let low2 = new cv.Mat(ImgHSV.rows , ImgHSV.cols , ImgHSV.type() , [160,50,50, 255])
+        //     let high1 = new cv.Mat(ImgHSV.rows , ImgHSV.cols , ImgHSV.type() , [5,255,255, 255])
+        //     let high2 = new cv.Mat(ImgHSV.rows , ImgHSV.cols , ImgHSV.type() , [255,255,255, 255])
             
-            cv.inRange(ImgHSV , low1 , high1 , red1 )
-            cv.inRange(ImgHSV , low2 , high2 , red2 )
-            cv.add(red1 , red2 , mask)
-            red1.delete() , red2.delete()
-            low1.delete() , low2.delete()
-            high1.delete() , high2.delete()
+        //     cv.inRange(ImgHSV , low1 , high1 , red1 )
+        //     cv.inRange(ImgHSV , low2 , high2 , red2 )
+        //     cv.add(red1 , red2 , mask)
+        //     red1.delete() , red2.delete()
+        //     low1.delete() , low2.delete()
+        //     high1.delete() , high2.delete()
+        if(colorHigh[0] != undefined && colorLow[0] != undefined) {
+            if(colorLow[0] > colorHigh[0]){
+                mask = InRange(mask,ImgHSV,colorHigh,colorLow)
+            } else {
+                mask = InRange(mask,ImgHSV,colorLow,colorHigh)
+            }
         } else {
             ImgHSV = null
             mask.delete()
@@ -137,7 +176,7 @@ document.addEventListener("DOMContentLoaded" , ()=>{
             let area = cv.contourArea(cnt , false)
             let rectangleColor = new cv.Scalar(255 , 255 , 255);
             if(modeShow == "frame") {
-                if(area > 5000 && area < 60000) {
+                if(area > 1000 && area < 60000) {
                     let [ position , size ] = rectPoint(cnt)
                     let rectangleColor = new cv.Scalar(255 , 255 , 255);
                     cv.rectangle(oldImg , position , size , rectangleColor , 2 , cv.LINE_AA , 0)

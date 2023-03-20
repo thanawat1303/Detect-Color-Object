@@ -21,7 +21,7 @@
     ">
         <video id="video-detect" hidden></video>
         <canvas id="outCanvas" width="90%"></canvas>
-        <select id="select-color" style="
+        <!-- <select id="select-color" style="
             font-size: 25px;
             margin: 5px;
             padding: 2px 1px;
@@ -31,7 +31,11 @@
             <option value="green">GREEN</option>
             <option value="orange">ORANGE</option>
             <option value="yellow">YELLOW</option>
-        </select>
+        </select> -->
+        <div style="display: flex; flex-direction: row; padding: 10px 0px;">
+            <label style="border-right: 2px solid red; padding-right: 5px;">Low : <input type="color" id="colorPickerLow"></label>
+            <label style="border-left: 2px solid red; padding-left: 5px;"><input type="color" id="colorPickerHigh"> : High</label>
+        </div>
         <div id="bt-switCamera">
             <button id="swichCamera">กลับกล้อง</button>
         </div>
