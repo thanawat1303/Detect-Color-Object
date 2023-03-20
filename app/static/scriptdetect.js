@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded" , ()=>{
             let area = cv.contourArea(cnt , false)
             let rectangleColor = new cv.Scalar(255 , 255 , 255);
             if(modeShow == "frame") {
-                if(area > 1000 && area < 60000) {
+                if(area > 3000 && area < 60000) {
                     let [ position , size ] = rectPoint(cnt)
                     let rectangleColor = new cv.Scalar(255 , 255 , 255);
                     cv.rectangle(oldImg , position , size , rectangleColor , 2 , cv.LINE_AA , 0)
