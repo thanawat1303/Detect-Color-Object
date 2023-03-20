@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded" , ()=>{
     //     console.log(colorLow)
     // })
 
-    document.getElementById('colorPickerHigh').addEventListener('input' , (e)=>{
+    document.getElementById('colorPicker').addEventListener('input' , (e)=>{
         let colorR = parseInt(e.target.value.substring(1 , 3) , 16)
         let colorG = parseInt(e.target.value.substring(3 , 5) , 16)
         let colorB = parseInt(e.target.value.substring(5 , 7) , 16)
