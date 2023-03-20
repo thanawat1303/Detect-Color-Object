@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded" , ()=>{
         cv.cvtColor(pushColor , pushColor , cv.COLOR_RGB2HSV)
         
         colorHigh = [pushColor.data[0] , 255 , 255]
-        colorLow = [pushColor.data[0] - 10 , 50 , 50]
+        colorLow = [(pushColor.data[0] - 15 < 0) ? 0 : pushColor.data[0] - 15 , 50 , 50]
         
         console.log(colorHigh)
     })
