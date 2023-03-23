@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY /app /app
 
-EXPOSE 80
+EXPOSE 1163
 
 RUN apk update && apk add \
 python3 \
